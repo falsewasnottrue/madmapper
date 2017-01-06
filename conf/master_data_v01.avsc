@@ -1,0 +1,354 @@
+{
+  "type" : "record",
+  "name" : "masterdata",
+  "namespace" : "masterdata",
+  "fields" : [
+  {
+    "name" : "pnr",
+    "type" : "string"
+  }, {
+    "name" : "panel_household_id",
+    "type" : "string"
+  }, {
+    "name" : "panel_household_person_id",
+    "type" : "string"
+  }, {
+    "name" : "panel_id",
+    "type" :  ["null", "string"],
+    "default": null
+
+
+
+  }, {
+    "name" : "gxl_agegroup_1",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_agegroup_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_agegroup_3",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_birthdate",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_birthyear",
+    "type" : ["null", "int"],
+    "default": null
+  }, {
+    "name" : "gxl_agehh_hhleader_1",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_agehh_hhleader_2",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_gender",
+    "type" : ["null", "int"],
+    "default": null
+  }, {
+    "name" : "gxl_sizeofhh",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_childreninhh_u04",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_childreninhh_u06",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_childreninhh_u14",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_childreninhh_u15",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_childreninhh_u18",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_profession_1",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_profession_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_profession_3",
+    "type" : ["null", "string"],
+   "default": null
+   }, {
+    "name" : "gxl_profession_4",
+    "type" : ["null", "string"],
+   "default": null
+   }, {
+    "name" : "gxl_employmentstatus",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_habitation_homeownership",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_habitation_hhinhouse",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_region_0",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_region_1",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_region_2",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_citytype_sizeofcity",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_citytype_urbanisation",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_income_hh_gross",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_income_hh_net",
+    "type" : ["null", "string"],
+    "default": null
+   }, {
+    "name" : "gxl_income_ind_net_1",
+    "type" : ["null", "string"],
+    "default": null
+   }, {
+    "name" : "gxl_income_ind_net_2",
+    "type" : ["null", "string"],
+    "default": null
+   }, {
+    "name" : "gxl_educationlevel_1",
+    "type" : ["null", "string"],
+    "default": null
+  }, {
+    "name" : "gxl_educationlevel_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_socialclass_1",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_socialclass_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_roleinhh_status_in_hh",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_status_in_hh_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_roleinhh_mainshopper",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_roleinhh_mainincome",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_lifestage_1",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_lifestage_2",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_lifestage_3",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_promosites",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_event",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_innovation",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_mistrust",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_nostalgia",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_quality",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_ls_traditional",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_newtrends",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_rcs",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "gxl_rcs_hh",
+    "type" : ["null", "string"],
+   "default": null
+
+
+
+  }, {
+    "name" : "gxl_fixedline_w_im_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_fixedline_wo_im_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_fixedline_ooh_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_fixedline_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_smartphone_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_smartphone_os",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_smartphone_user",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tablet_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tablet_main_user",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tablet_os",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tablet_user",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tablet_user_intensity",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "gxl_tv_intensity",
+    "type" : ["null", "int"],
+   "default": null
+
+
+
+  }, {
+    "name" : "mst_childreninhh_u14_metric",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "mst_age_metric",
+    "type" : ["null", "double"],
+   "default": null
+  }, {
+    "name" : "mst_sizeofhh_metric",
+    "type" : ["null", "int"],
+    "default": null
+  }, {
+    "name" : "mst_income_hh_net_metric",
+    "type" : ["null", "int"],
+   "default": null
+  }, {
+    "name" : "mst_income_ind_net_1_metric",
+    "type" : ["null", "int"],
+   "default": null
+
+
+  }, {
+    "name" : "dep_desktop_panel",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "dep_smartphone_panel",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "dep_tablet_panel",
+    "type" : ["null", "string"],
+   "default": null
+  }, {
+    "name" : "dep_tv_panel",
+    "type" : ["null", "string"],
+   "default": null
+
+
+  }, {
+    "name" : "panel_membership_codes",
+    "type" : [ "null", {
+                       "type" : "array",
+                       "items": "string"
+                       } ],
+    "default": null
+  }, {
+    "name" : "panel_membership_ids",
+    "type" : [ "null", {
+                       "type" : "array",
+                       "items": "string"
+                       } ],
+    "default": null
+
+  }, {
+    "name" : "local_attributes",
+    "type" : {
+      "type" : "map",
+      "values" : "string"
+    }
+
+  }, {
+    "name" : "dep_valid_from",
+    "type" : "string"
+  }, {
+    "name" : "dep_valid_until",
+    "type" : "string"
+  }
+]
+}
