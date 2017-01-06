@@ -1,8 +1,67 @@
-@(field: domain.Field)
+@(field: domain.Field, spec: domain.Spec)
 
 <div class="form-group">
-    <label for="@field.name">@field.name</label>
+    @defining(spec.forField(field)) { fieldSpec =>
+        <label id="lbl_@field.name" class="col-sm-3 control-label" for="@field.name">@field.name</label>
 
+        <div id="edit_@field.name" class="col-sm-9 collapsed">
+            <div class="col-sm-9">
+                <input class="col-sm-4" id="@field.name" placeholder="Source" value="@fieldSpec.source">
+                <label class="col-sm-2">
+                    <input id="direct_@field.name" data-fieldname="@field.name" type="checkbox" @if(fieldSpec.direct) {checked}> Direct
+                </label>
+            </div>
 
-    <input class="form-control" id="@field.name">
+            <div id="mapping_@field.name" class="col-sm-9 @if(fieldSpec.direct) {collapsed}" >
+                <table class="table">
+                    <thead><tr><td>from</td><td>to</td></tr></thead>
+                    <tbody>
+                        @for(m <- fieldSpec.mapping) {
+                            <tr>
+                                <td>&ldquo;@m._1&rdquo;</td>
+                                <td>&ldquo;@m._2&rdquo;</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div>
+                    <input id="key_@field.name" type="text" class="col-sm-3" placeholder="Key">
+                    <input id="val_@field.name" type="text" class="col-sm-3" placeholder="Value">
+                    <button id="addmap" data-fieldname="@field.name" type="button" class="btn btn-sm btn-default">Add</button>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <fieldset>
+                    <input type="radio" id="p_@field.name" name="origin_@field.name" value="Individual" @if(fieldSpec.individual) {checked}>
+                    <label for="p_@field.name"> Individual</label><br>
+                    <input type="radio" id="hh_@field.name" name="origin_@field.name" value="Household" @if(fieldSpec.household) {checked}>
+                    <label for="hh_@field.name"> Household</label><br>
+                </fieldset>
+            </div>
+
+            <div class="col-sm-3">
+                <fieldset>
+                    <input type="radio" id="yearly_@field.name" name="frequency_@field.name" value="Individual" @if(fieldSpec.yearly) {checked}>
+                    <label for="yearly_@field.name"> Yearly</label><br>
+                    <input type="radio" id="variable_@field.name" name="frequency_@field.name" value="Household" @if(fieldSpec.variable) {checked}>
+                    <label for="variable_@field.name"> Variable</label><br>
+                </fieldset>
+            </div>
+
+            <div class="col-sm-3">
+                <fieldset>
+                    <input type="radio" id="atr_@field.name" name="src_@field.name" value="Individual" @if(fieldSpec.atr) {checked}>
+                    <label for="atr_@field.name">Atr</label><br>
+                    <input type="radio" id="atlas_@field.name" name="src_@field.name" value="Household" @if(fieldSpec.atlas) {checked}>
+                    <label for="atlas_@field.name">Atlas</label><br>
+                    <input type="radio" id="evogenius_@field.name" name="src_@field.name" value="Individual" @if(fieldSpec.evogenius) {checked}>
+                    <label for="evogenius_@field.name">Evogenius</label><br>
+                    <input type="radio" id="survey_@field.name" name="src_@field.name" value="Household" @if(fieldSpec.survey) {checked}>
+                    <label for="survey_@field.name">Survey</label><br>
+                </fieldset>
+            </div>
+        </div>
+    }
 </div>
+<hr>

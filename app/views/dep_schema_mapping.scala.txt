@@ -1,0 +1,378 @@
+@(spec: domain.Spec)
+
+-- # load atr data
+atr = LOAD '${input_collection_name}.${input_dataset_name}_view_${input_view_name}' USING org.apache.hive.hcatalog.pig.HCatLoader();
+
+-- # remove time from validfrom and valid until values since always set to 'T00:00:00.000+0200' after the actual date like '2008-01-01'
+atr_remove_time = FOREACH atr GENERATE timestamp..origin,(SUBSTRING(validfrom,0,10)) AS  validfrom,(SUBSTRING(validuntil,0,10)) AS validuntil,slice_start..;
+
+-- # filter data based on time
+-- # here a feature is valid if its validity started but did not end inbetween slice_start/slice_end
+atr_filter = FILTER atr_remove_time BY (validfrom <= '$slice_end' AND '$slice_end' <= validuntil)
+-- workaround until we drop inactive users completely
+ OR featurename == 'household_id';
+
+-- # here, for panelcode features we collect valid from dates
+atr_panelcode_full_silce_coverage = FILTER atr_remove_time BY featurename == 'panelcode';
+
+atr_panelcode_gen = FOREACH atr_panelcode_full_silce_coverage GENERATE
+    panelistid AS pnr,
+	((TRIM(featurevalue) == 'IMPE' OR TRIM(featurevalue) == 'MEPI') ? validfrom : null ) AS desktop_panel,
+	((TRIM(featurevalue) == 'MMPE') ? validfrom : null ) AS smartphone_panel,
+	((TRIM(featurevalue) == 'MMT') ? validfrom : null ) AS tablet_panel;
+
+atr_panelcode_group = group atr_panelcode_gen BY pnr;
+
+atr_panelcode_group_gen = FOREACH atr_panelcode_group GENERATE
+    group AS pnr,
+	MIN(atr_panelcode_gen.desktop_panel) AS dep_desktop_panel,
+	MIN(atr_panelcode_gen.smartphone_panel) AS dep_smartphone_panel,
+	MIN(atr_panelcode_gen.tablet_panel) AS dep_tablet_panel;
+
+-- # filter feature names we are interested in and based on their origin
+atr_feature_filter = FILTER atr_filter BY (
+    (featurename == 'household_id' AND origin == 'P') OR
+    (featurename == 'WEP_Mitarbeitsbeginn' AND origin == 'HH') OR
+	(featurename == 'GXL_FixedLine_w_IM_Intensity' AND origin == 'P') OR
+	(featurename == 'GXL_FixedLine_wo_IM_Intensity' AND origin == 'P') OR
+	(featurename == 'GXL_FixedLine_ooH_Intensity' AND origin == 'P') OR
+	(featurename == 'Gekuendigt' AND origin == 'HH') OR
+	(featurename == 'MobileMonitor_Mitarbeitsbeginn' AND origin == 'P') OR
+	(featurename == 'GXL_Smartphone_User' AND origin == 'P') OR
+	(featurename == 'GXL_Smartphone_OS' AND origin == 'P'  AND   featurevalue IN ('1','2','3') ) OR
+	(featurename == 'GXL_Smartphone_Intensity' AND origin == 'P') OR
+	(featurename == 'MobileMonitor_Tab_MAB' AND origin == 'HH') OR
+	(featurename == 'GXL_Tablet_Intensity' AND origin == 'P') OR
+	(featurename == 'GXL_Tablet_User' AND origin == 'P') OR
+	(featurename == 'GXL_Tablet_User_Intensity' AND origin == 'P') OR
+	(featurename == 'GXL_Tablet_OS' AND origin == 'P'  AND  featurevalue IN ('1','2','3') ) OR
+	(featurename == 'GXL_Tablet_Main_User' AND origin == 'P') OR
+	(featurename == 'Mitarbeitsbeginn_HandyScan' AND origin == 'HH') OR
+	(featurename == 'GXL_TV_Intensity' AND origin == 'P') OR
+	(featurename == 'Alter_Usage_IPAN_2008' AND origin == 'P') OR
+	(featurename == 'Alter_HH_fuehrende_Person' AND origin == 'HH') OR
+	(featurename == 'Alter_neu_Haushaltsfuehrer' AND origin == 'HH') OR
+	(featurename == 'Anzahl_der_Kinder_unter_14_J' AND origin == 'HH') OR
+	(featurename == 'Anzahl_der_Kinder_unter_15_J' AND origin == 'HH') OR
+	(featurename == 'Anzahl_der_Kinder_unter_18J' AND origin == 'HH') OR
+	(featurename == 'Beruf_des_TN_IPAN' AND origin == 'P') OR
+	(featurename == 'Berufsgruppe_TN_IPAN' AND origin == 'P') OR
+	(featurename == 'Beschaeftigung_TN_IPAN' AND origin == 'P') OR
+	(featurename == 'Bundeslaender' AND origin == 'HH') OR
+	(featurename == 'Eigentumsverhaeltnisse_2003' AND origin == 'HH') OR
+	(featurename == 'Familienlebenswelten' AND origin == 'HH') OR
+	(featurename == 'Familienlebenswelten_Neu' AND origin == 'HH') OR
+	(featurename == 'Frueherer_Beruf_TN_IPAN' AND origin == 'P') OR
+	(featurename == 'Gebiet' AND origin == 'HH') OR
+	(featurename == 'Geschlecht_IPAN' AND origin == 'P') OR
+	(featurename == 'HH_mit_Kindern_unter_4J' AND origin == 'HH') OR
+	(featurename == 'HHnettoeink_monatl_ab_2002' AND origin == 'HH') OR
+	(featurename == 'Haushaltsgroesse' AND origin == 'HH') OR
+	(featurename == 'ILW_biografisch' AND origin == 'HH') OR
+	(featurename == 'Internetnutzung Person' AND origin == 'P') OR
+	(featurename == 'Nettoeinkommen_pro_Kopf_1_2002' AND origin == 'HH') OR
+	(featurename == 'Nettoeinkommen_pro_Kopf_2_2002' AND origin == 'HH') OR
+	(featurename == 'Ortsgroesse' AND origin == 'HH') OR
+	(featurename == 'Regierungsbezirke_ab_2002' AND origin == 'HH') OR
+	(featurename == 'Schulbildung_IPAN' AND origin == 'P') OR
+	(featurename == 'Schulbildung_3_IPAN' AND origin == 'P') OR
+	(featurename == 'Soziale_Schicht' AND origin == 'HH') OR
+	(featurename == 'Stellung_im_Haushalt_Person' AND origin == 'P') OR
+	(featurename == 'Wohlstandsklassen_OECD_ab_2001' AND origin == 'HH') OR
+	(featurename == 'Wohn_Mietverhaeltnisse_2003' AND origin == 'HH') OR
+	(featurename == 'Zahl_der_Kinder_bis_6_Jahre' AND origin == 'HH') OR
+	(featurename == 'Geburtsjahr_VTAB_Person' AND origin == 'P') OR
+	(featurename == 'Haushaltsfuehrer' AND origin == 'P') OR
+	(featurename == 'Hauptverdiener' AND origin == 'P') OR
+
+	(featurename == 'Roper_Styles_gesamt_2007' AND origin == 'P') OR
+	(featurename == 'Roper_Styles_gesamt' AND origin == 'HH') OR
+	(featurename MATCHES 'Traditionelle_Lebensf.hrung' AND origin == 'HH') OR
+	(featurename == 'Innovationsneigung' AND origin == 'HH') OR
+	(featurename == 'Erlebnisorientierung' AND origin == 'HH') OR
+	(featurename == 'Nostalgie' AND origin == 'HH') OR
+	(featurename MATCHES 'Mi.tr\\.gegen.ber_Neuprod\\.' AND origin == 'HH') OR
+	(featurename MATCHES 'Qualit.tsorientierung' AND origin == 'HH') OR
+	(featurename == 'Avantgardisten' AND origin == 'HH'));
+
+
+
+-- # generating/projecting (pnr,output_column_name,output_column_value)
+-- # converting longs to dates
+atr_gen = FOREACH atr_feature_filter GENERATE panelistid AS pnr, featurename AS output_column_name, ((
+                    featurename == 'WEP_Mitarbeitsbeginn' or
+                    featurename == 'MobileMonitor_Tab_MAB' or
+                    featurename == 'Mitarbeitsbeginn_HandyScan' or
+                    featurename == 'Gekuendigt' or
+                    featurename == 'MobileMonitor_Mitarbeitsbeginn') ?
+                        ToString(ToDate((long)(featurevalue)),'yyyyMMdd') :
+                        featurevalue
+                ) AS output_column_value;
+
+
+-- normalize categorical values, such that suffixed dummy variable names are still valid schema field names
+DEFINE CleanColumnName com.gfk.hyperlane.pigudf.udf.CleanFeatureValues('output_column_name');
+atr_gen = FOREACH atr_gen GENERATE FLATTEN(CleanColumnName(*));
+
+-- # group data
+atr_grouped = GROUP atr_gen BY pnr;
+
+
+-- # transpose data
+DEFINE TransposeAtr com.gfk.hyperlane.pigudf.udf.TransposeData('pnr: chararray,
+    household_id: chararray,
+	alter_hh_fuehrende_person: chararray,
+	alter_neu_haushaltsfuehrer: chararray,
+	alter_usage_ipan_2008: chararray,
+	anzahl_der_kinder_unter_14_j: chararray,
+	anzahl_der_kinder_unter_15_j: chararray,
+	anzahl_der_kinder_unter_18j: chararray,
+	beruf_des_tn_ipan: chararray,
+	berufsgruppe_tn_ipan: chararray,
+	beschaeftigung_tn_ipan: chararray,
+	bundeslaender: chararray,
+	eigentumsverhaeltnisse_2003: chararray,
+	familienlebenswelten: chararray,
+	familienlebenswelten_neu: chararray,
+	frueherer_beruf_tn_ipan: chararray,
+	gebiet: chararray,
+	gekuendigt: chararray,
+	geschlecht_ipan: chararray,
+	gxl_fixedline_ooh_intensity: int,
+	gxl_fixedline_w_im_intensity: int,
+	gxl_fixedline_wo_im_intensity: int,
+	gxl_smartphone_intensity: int,
+	gxl_smartphone_os: int,
+	gxl_smartphone_user: int,
+	gxl_tablet_intensity: int,
+	gxl_tablet_main_user: int,
+	gxl_tablet_os: int,
+	gxl_tablet_user: int,
+	gxl_tablet_user_intensity: int,
+	gxl_tv_intensity: int,
+	haushaltsgroesse: chararray,
+	hh_mit_kindern_unter_4j: chararray,
+	hhnettoeink_monatl_ab_2002: chararray,
+	ilw_biografisch: chararray,
+	internetnutzung_person: chararray,
+	mitarbeitsbeginn_handyscan: chararray,
+	mobilemonitor_mitarbeitsbeginn: chararray,
+	mobilemonitor_tab_mab: chararray,
+	nettoeinkommen_pro_kopf_1_2002: chararray,
+	nettoeinkommen_pro_kopf_2_2002: chararray,
+	ortsgroesse: chararray,
+	regierungsbezirke_ab_2002: chararray,
+	schulbildung_3_ipan: chararray,
+	schulbildung_ipan: chararray,
+	soziale_schicht: chararray,
+	stellung_im_haushalt_person: chararray,
+	wep_mitarbeitsbeginn: chararray,
+	wohlstandsklassen_oecd_ab_2001: chararray,
+	wohn_mietverhaeltnisse_2003: chararray,
+	zahl_der_kinder_bis_6_jahre: chararray,
+	geburtsjahr_vtab_person: chararray,
+	haushaltsfuehrer: chararray,
+	hauptverdiener: chararray,
+
+	roper_styles_gesamt_2007: chararray,
+	roper_styles_gesamt: chararray,
+	traditionelle_lebensfhrung: chararray,
+	innovationsneigung: chararray,
+	erlebnisorientierung: chararray,
+	nostalgie: chararray,
+	mitrgegenber_neuprod: chararray,
+	qualittsorientierung: chararray,
+	avantgardisten: chararray
+	');
+
+panelist_records = FOREACH atr_grouped GENERATE FLATTEN(TransposeAtr(*));
+-- filter out records where only household_id is set
+panelist_records = FILTER panelist_records BY com.gfk.hyperlane.pigudf.udf.NumberOfSetFields(alter_hh_fuehrende_person..) > 0;
+
+
+DEFINE CleanValues com.gfk.hyperlane.pigudf.udf.CleanFeatureValues('-pnr,household_id');
+panelist_records = FOREACH panelist_records GENERATE FLATTEN(CleanValues(*)),
+        SUBSTRING(pnr, (int) SIZE(household_id), (int) SIZE(pnr)) AS panel_household_person_id;
+
+--#########################################################################################################################
+-- addind metric fields for
+-- Alter_Usage_IPAN_2008, Haushaltsgroesse, Haushaltsgroesse, Nettoeinkommen_pro_Kopf_1_2002, HHnettoeink_monatl_ab_2002
+--#########################################################################################################################
+
+panelist_records_metrics = FOREACH panelist_records GENERATE *, -2 AS gxl_fixedline_intensity,
+	CASE alter_usage_ipan_2008
+		WHEN '_0_bis_2_jahre' THEN 1
+		WHEN '_3_bis_5_jahre' THEN 4
+		WHEN '_6_bis_9_jahre' THEN 7.5
+		WHEN '10_bis_13_jahre' THEN 11
+		WHEN '14_bis_15_jahre' THEN 14.5
+		WHEN '16_bis_17_jahre' THEN 16.5
+		WHEN '18_bis_19_jahre' THEN 18.5
+		WHEN '20_bis_24_jahre' THEN 22
+		WHEN '25_bis_29_jahre' THEN 27
+		WHEN '30_bis_34_jahre' THEN 32
+		WHEN '35_bis_39_jahre' THEN 37
+		WHEN '40_bis_44_jahre' THEN 42
+		WHEN '45_bis_49_jahre' THEN 47
+		WHEN '50_bis_54_jahre' THEN 52
+		WHEN '55_bis_59_jahre' THEN 57
+		WHEN '60_bis_64_jahre' THEN 62
+		WHEN '65_bis_69_jahre' THEN 67
+		WHEN '70_bis_74_jahre' THEN 72
+		WHEN '75_und_mehr_jahre' THEN 77
+		ELSE NULL
+	END AS mst_age_metric,
+
+	CASE
+		WHEN haushaltsgroesse == '1_personenhaushalt_weiblich' OR
+			haushaltsgroesse matches '1_personenhaushalt_mnnlich' THEN 1
+		WHEN haushaltsgroesse == '2_personenhaushalt' THEN 2
+		WHEN haushaltsgroesse == '3_personenhaushalt' THEN 3
+		WHEN haushaltsgroesse == '4_personenhaushalt' THEN 4
+		WHEN haushaltsgroesse == '5_personenhaushalt' THEN 5
+		WHEN haushaltsgroesse == '6_personenhaushalt' THEN 6
+		WHEN haushaltsgroesse == '7_personenhaushalt' THEN 7
+		WHEN haushaltsgroesse == '8_personenhaushalt' THEN 8
+		WHEN haushaltsgroesse == '9_personenhaushalt' THEN 9
+		WHEN haushaltsgroesse == '10_personenhaushalt' THEN 10
+		ELSE NULL
+	END AS mst_sizeofhh_metric,
+
+	CASE nettoeinkommen_pro_kopf_1_2002
+		WHEN 'bis_499_euro' THEN 250
+		WHEN '_500_euro_624_euro' THEN 565
+		WHEN '_625_euro_749_euro' THEN 690
+		WHEN '_750_euro_874_euro' THEN 815
+		WHEN '_875_euro_999_euro' THEN 940
+		WHEN '1000_euro_1124_euro' THEN 1065
+		WHEN '1125_euro_1249_euro' THEN 1190
+		WHEN '1250_euro_1374_euro' THEN 1315
+		WHEN '1375_euro_1499_euro' THEN 1440
+		WHEN '1500_euro_1749_euro' THEN 1625
+		WHEN '1750_euro_1999_euro' THEN 1875
+		WHEN '2000_euro_und_mehr' THEN 2300
+		ELSE NULL
+	END AS mst_income_ind_net_1_metric,
+
+	CASE hhnettoeink_monatl_ab_2002
+		WHEN 'bis_499_euro' THEN 250
+		WHEN '_500_euro_749_euro' THEN 625
+		WHEN '_750_euro_999_euro' THEN 875
+		WHEN '1000_euro_1249_euro' THEN 1125
+		WHEN '1250_euro_1499_euro' THEN 1375
+		WHEN '1500_euro_1749_euro' THEN 1625
+		WHEN '1750_euro_1999_euro' THEN 1875
+		WHEN '2000_euro_2249_euro' THEN 2125
+		WHEN '2250_euro_2499_euro' THEN 2375
+		WHEN '2500_euro_2749_euro' THEN 2625
+		WHEN '2750_euro_2999_euro' THEN 2875
+		WHEN '3000_euro_3249_euro' THEN 3125
+		WHEN '3250_euro_3499_euro' THEN 3375
+		WHEN '3500_euro_3749_euro' THEN 3625
+		WHEN '3750_euro_3999_euro' THEN 3875
+		WHEN '4000_euro_und_mehr' THEN 4400
+		ELSE NULL
+	END AS mst_income_hh_net_metric,
+
+	CASE internetnutzung_person
+		WHEN 'nie' THEN 0
+		WHEN 'seltner' THEN 0.5
+		WHEN '1_2_t_woche' THEN 1.5
+		WHEN '3_4_t_woche' THEN 3.5
+		WHEN '5_6_t_woche' THEN 5.5
+		WHEN 'taeglich' THEN 7
+		ELSE NULL
+	END AS de_usage_frequency_metric,
+
+	CASE anzahl_der_kinder_unter_14_j
+		WHEN 'ohne_kinder' THEN 0
+		WHEN '1_kind' THEN 1
+		WHEN '2_kinder' THEN 2
+		WHEN '3_kinder' THEN 3
+		WHEN '4_kinder' THEN 4
+		WHEN '5_kinder' THEN 5
+		WHEN '6_kinder' THEN 6
+		WHEN '7_kinder' THEN 7
+		ELSE NULL
+	END AS mst_childreninhh_u14_metric,
+
+	(int)geburtsjahr_vtab_person AS gxl_birthyear,
+
+	CASE geschlecht_ipan
+	  WHEN 'weiblich' THEN 2
+      WHEN 'maennlich' THEN 1
+      ELSE NULL
+	END AS gxl_gender,
+
+	'$slice_end' AS dep_valid_from,
+	'$slice_end' AS dep_valid_until;
+
+panelist_records_metrics_pms = FOREACH panelist_records_metrics  GENERATE FLATTEN(com.gfk.hyperlane.pigudf.udf.RemovePrefixedDuplicates(*));
+
+panelist_records_metrics_pms = JOIN panelist_records_metrics_pms BY pnr LEFT, atr_panelcode_group_gen BY pnr USING 'replicated';
+
+-- removing old panel info (since it comes with a prefix from the join)
+panelist_records_metrics_pms = FOREACH panelist_records_metrics_pms
+                               GENERATE FLATTEN(com.gfk.hyperlane.pigudf.udf.RemovePrefixedDuplicates(*));
+
+DEFINE RenameAtrFields com.gfk.hyperlane.pigudf.udf.RenameFields('
+    household_id->panel_household_id,
+	alter_hh_fuehrende_person->gxl_agehh_hhleader_1,
+	alter_usage_ipan_2008->gxl_agegroup_1,
+	alter_neu_haushaltsfuehrer->gxl_agehh_hhleader_2,
+	anzahl_der_kinder_unter_14_j->gxl_childreninhh_u14,
+	anzahl_der_kinder_unter_15_j->gxl_childreninhh_u15,
+	anzahl_der_kinder_unter_18j->gxl_childreninhh_u18,
+	beruf_des_tn_ipan->gxl_profession_1,
+	berufsgruppe_tn_ipan->gxl_profession_2,
+	beschaeftigung_tn_ipan->gxl_profession_4,
+	bundeslaender->gxl_region_1,
+	eigentumsverhaeltnisse_2003->gxl_habitation_homeownership,
+	familienlebenswelten->gxl_lifestage_2,
+	familienlebenswelten_neu->gxl_lifestage_3,
+	frueherer_beruf_tn_ipan->gxl_profession_3,
+	gebiet->gxl_region_0,
+	gekuendigt->de_gekuendigt,
+	hh_mit_kindern_unter_4j->gxl_childreninhh_u04,
+	hhnettoeink_monatl_ab_2002->gxl_income_hh_net,
+	haushaltsgroesse->gxl_sizeofhh,
+	ilw_biografisch->gxl_lifestage_1,
+	internetnutzung_person->de_usage_frequency,
+	mitarbeitsbeginn_handyscan->de_mitarbeitsbeginn_handyscan,
+	mobilemonitor_mitarbeitsbeginn->de_mobilemonitor_mitarbeitsbeginn,
+	mobilemonitor_tab_mab->de_mobilemonitor_tab_mab,
+	nettoeinkommen_pro_kopf_1_2002->gxl_income_ind_net_1,
+	nettoeinkommen_pro_kopf_2_2002->gxl_income_ind_net_2,
+	ortsgroesse->gxl_citytype_sizeofcity,
+	regierungsbezirke_ab_2002->gxl_region_2,
+	roper_styles_gesamt_2007->gxl_roper_styles,
+	schulbildung_3_ipan->gxl_educationlevel_2,
+	schulbildung_ipan->gxl_educationlevel_1,
+	soziale_schicht->gxl_socialclass_1,
+	stellung_im_haushalt_person->gxl_roleinhh_status_in_hh,
+	wep_mitarbeitsbeginn->de_wep_mitarbeitsbeginn,
+	wohlstandsklassen_oecd_ab_2001->gxl_socialclass_2,
+	wohn_mietverhaeltnisse_2003->gxl_habitation_hhinhouse,
+	zahl_der_kinder_bis_6_jahre->gxl_childreninhh_u06,
+	geburtsjahr_vtab_person->gxl_birthdate,
+	haushaltsfuehrer->gxl_roleinhh_mainshopper,
+	hauptverdiener->gxl_roleinhh_mainincome,
+	qualittsorientierung->gxl_ls_quality,
+	roper_styles_gesamt_2007->gxl_rcs,
+	roper_styles_gesamt->gxl_rcs_hh,
+	traditionelle_lebensfhrung->gxl_ls_traditional,
+	innovationsneigung->gxl_ls_innovation,
+	erlebnisorientierung->gxl_ls_event,
+	nostalgie->gxl_ls_nostalgia,
+	mitrgegenber_neuprod->gxl_ls_mistrust,
+	qualittsorientierung->gxl_ls_quality,
+	avantgardisten->gxl_newtrends
+	');
+
+international_records = FOREACH panelist_records_metrics_pms GENERATE FLATTEN(RenameAtrFields(*)),'-1' AS dep_schema_mapping_boundary;
+
+IMPORT 'fold.pig';
+
+result = foldToMap(international_records, 'de_', 'local_attributes');
+
+STORE result INTO '$dep_schema_mapping_path/avro' USING com.gfk.hyperlane.pigudf.storage.MatchingAvroStorer('', '-f $schema_file');

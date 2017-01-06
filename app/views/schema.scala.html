@@ -1,18 +1,23 @@
-@(schema: domain.Schema)
+@(schema: domain.Schema, spec: domain.Spec)
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <title>MadMapper</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
-</head>
+    <head>
+        <title>MadMapper</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/custom.css")">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="@routes.Assets.versioned("javascripts/fieldInput.js")"></script>
+    </head>
     <body>
         <div class="container">
-        <form class="form-horizontal">
+        <form action="@routes.SchemaController.generate" method="post" class="form-horizontal">
             @for(field <- schema.fields) {
-                @fieldInput(field)
+                @fieldInput(field, spec)
             }
+            <input class="btn btn-primary" type="submit" value="Generate mapping">
         </form>
         </div>
     </body>
