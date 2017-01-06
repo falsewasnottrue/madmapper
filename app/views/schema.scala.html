@@ -1,0 +1,19 @@
+@(schema: domain.Schema)
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MadMapper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+</head>
+    <body>
+        <div class="container">
+        <form class="form-horizontal">
+            @for(field <- schema.fields) {
+                @fieldInput(field)
+            }
+        </form>
+        </div>
+    </body>
+</html>

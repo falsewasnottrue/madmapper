@@ -1,8 +1,23 @@
 package domain
 
-import play.api.libs.json.JsObject
+import play.api.libs.json.{JsArray, JsObject, JsValue}
 
-case class Schema(raw: JsObject) {
+trait FieldType
+case object StringFieldType extends FieldType
+case object IntFieldType extends FieldType
+
+case class Field(name: String, typ: String)
+
+case class Schema(raw: JsValue) {
 
   override def toString = raw.toString
+
+  def fields: Seq[Field] = (raw \\ "fields").flatMap {
+    case fs: JsArray => fs.value
+  } map {
+    case obj: JsObject => Field(
+      (obj \ "name").asOpt[String].getOrElse(""),
+      (obj \ "type").asOpt[String].getOrElse("")
+    )
+  }
 }
