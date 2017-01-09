@@ -138,7 +138,7 @@ panelist_records_metrics = FOREACH panelist_records GENERATE *, -2 AS gxl_fixedl
 
     @for((fieldName,fieldMapping) <- spec.mappedFields) {
         CASE @fieldName
-            @for((key,value) <- fieldMapping) { WHEN '@key' THEN value
+            @for((key,value) <- fieldMapping) { WHEN '@key' THEN '@value'
             }
         END AS mst_age_metric,
     }
@@ -155,57 +155,9 @@ panelist_records_metrics_pms = FOREACH panelist_records_metrics_pms
                                GENERATE FLATTEN(com.gfk.hyperlane.pigudf.udf.RemovePrefixedDuplicates(*));
 
 DEFINE RenameAtrFields com.gfk.hyperlane.pigudf.udf.RenameFields('
-    household_id->panel_household_id,
-	alter_hh_fuehrende_person->gxl_agehh_hhleader_1,
-	alter_usage_ipan_2008->gxl_agegroup_1,
-	alter_neu_haushaltsfuehrer->gxl_agehh_hhleader_2,
-	anzahl_der_kinder_unter_14_j->gxl_childreninhh_u14,
-	anzahl_der_kinder_unter_15_j->gxl_childreninhh_u15,
-	anzahl_der_kinder_unter_18j->gxl_childreninhh_u18,
-	beruf_des_tn_ipan->gxl_profession_1,
-	berufsgruppe_tn_ipan->gxl_profession_2,
-	beschaeftigung_tn_ipan->gxl_profession_4,
-	bundeslaender->gxl_region_1,
-	eigentumsverhaeltnisse_2003->gxl_habitation_homeownership,
-	familienlebenswelten->gxl_lifestage_2,
-	familienlebenswelten_neu->gxl_lifestage_3,
-	frueherer_beruf_tn_ipan->gxl_profession_3,
-	gebiet->gxl_region_0,
-	gekuendigt->de_gekuendigt,
-	hh_mit_kindern_unter_4j->gxl_childreninhh_u04,
-	hhnettoeink_monatl_ab_2002->gxl_income_hh_net,
-	haushaltsgroesse->gxl_sizeofhh,
-	ilw_biografisch->gxl_lifestage_1,
-	internetnutzung_person->de_usage_frequency,
-	mitarbeitsbeginn_handyscan->de_mitarbeitsbeginn_handyscan,
-	mobilemonitor_mitarbeitsbeginn->de_mobilemonitor_mitarbeitsbeginn,
-	mobilemonitor_tab_mab->de_mobilemonitor_tab_mab,
-	nettoeinkommen_pro_kopf_1_2002->gxl_income_ind_net_1,
-	nettoeinkommen_pro_kopf_2_2002->gxl_income_ind_net_2,
-	ortsgroesse->gxl_citytype_sizeofcity,
-	regierungsbezirke_ab_2002->gxl_region_2,
-	roper_styles_gesamt_2007->gxl_roper_styles,
-	schulbildung_3_ipan->gxl_educationlevel_2,
-	schulbildung_ipan->gxl_educationlevel_1,
-	soziale_schicht->gxl_socialclass_1,
-	stellung_im_haushalt_person->gxl_roleinhh_status_in_hh,
-	wep_mitarbeitsbeginn->de_wep_mitarbeitsbeginn,
-	wohlstandsklassen_oecd_ab_2001->gxl_socialclass_2,
-	wohn_mietverhaeltnisse_2003->gxl_habitation_hhinhouse,
-	zahl_der_kinder_bis_6_jahre->gxl_childreninhh_u06,
-	geburtsjahr_vtab_person->gxl_birthdate,
-	haushaltsfuehrer->gxl_roleinhh_mainshopper,
-	hauptverdiener->gxl_roleinhh_mainincome,
-	qualittsorientierung->gxl_ls_quality,
-	roper_styles_gesamt_2007->gxl_rcs,
-	roper_styles_gesamt->gxl_rcs_hh,
-	traditionelle_lebensfhrung->gxl_ls_traditional,
-	innovationsneigung->gxl_ls_innovation,
-	erlebnisorientierung->gxl_ls_event,
-	nostalgie->gxl_ls_nostalgia,
-	mitrgegenber_neuprod->gxl_ls_mistrust,
-	qualittsorientierung->gxl_ls_quality,
-	avantgardisten->gxl_newtrends
+    @for((k,v) <- spec.renamedFields) {
+        @k->@v,
+    }
 	');
 
 international_records = FOREACH panelist_records_metrics_pms GENERATE FLATTEN(RenameAtrFields(*)),'-1' AS dep_schema_mapping_boundary;

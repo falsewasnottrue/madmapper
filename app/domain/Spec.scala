@@ -34,8 +34,8 @@ case class Spec(specFields: Seq[SpecField]) {
       s"featurename == '${specField.source}' AND origin == '${specField.origin}'"
     ).mkString(" OR ")
 
-  // FIXME implement
-  def renamedFields: Map[String, String] = ???
+  def renamedFields: Map[String, String] =
+    specFields.map(field => (field.source, field.target)).toMap
 
   def mappedFields: Map[String, Map[String, String]] = {
     specFields.filter(_.isMapped).map(field => (field.source, field.mapping)).toMap
@@ -60,15 +60,13 @@ object Spec {
 
       def extractMapping: Map[String, String] = {
         val prefix = "mapping_" + fieldName + "_"
-        val kss = rawData.toList.
-          filter { case (k, _) => k.startsWith(prefix + "key_")}
-
         val keys = rawData.toList.
           filter { case (k, _) => k.startsWith(prefix + "key_")}.
           map { case (k, _) => k.substring((prefix + "key_").length)}
 
         keys.map(key =>
-          (key, rawData(prefix + "val_" + key).headOption.get)
+          (rawData(prefix + "key_" + key).headOption.get,
+            rawData(prefix + "val_" + key).headOption.get)
         ).toMap
       }
 
