@@ -1,4 +1,4 @@
-@(specs: Seq[String])
+@(specs: Seq[String])(implicit flash: Flash)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -11,6 +11,10 @@
     </head>
     <body>
         <div class="container">
+            @flash.get("message").map { msg =>
+                <div class="info">@msg</div>
+            }
+
             <h2>Specifications</h2>
             <table class="table">
                 @for(spec <- specs) {
@@ -27,6 +31,11 @@
                     </tr>
                 }
             </table>
+
+            <form action="@routes.SpecController.newSpec" method="post">
+                <input type="text" name="specName" />
+                <input type="submit" value="New" />
+            </form>
         </div>
     </body>
 </html>

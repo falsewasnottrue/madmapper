@@ -42,7 +42,6 @@ object Spec {
   val emptySpec = Spec(Nil)
 
   def fromRequest(request: Request[AnyContent]): Spec = {
-
     val rawData = request.body.asFormUrlEncoded.getOrElse(Map[String, Seq[String]]())
 
     val fieldNames: Seq[String] = rawData.keySet.
@@ -56,7 +55,8 @@ object Spec {
         target = fieldName,
         source = extract("source"),
         direct = extract("direct").equalsIgnoreCase("on"),
-        // FIXME implment
+        // FIXME implement
+
         // mapping: Map[String, String] = Map[String, String](),
         individual = extract("origin").equalsIgnoreCase("Individual"),
         yearly = extract("frequency").equalsIgnoreCase("yearly"),
