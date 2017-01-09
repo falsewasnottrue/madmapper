@@ -51,13 +51,28 @@ object Spec {
     val specFields = fieldNames.map(fieldName => {
       def extract(prefix: String): String = rawData.get(prefix + "_" + fieldName).flatMap(_.headOption).getOrElse("")
 
+      def extractMapping: Map[String, String] = {
+        val prefix = "mapping_" + fieldName + "_"
+        val kss = rawData.toList.
+          filter { case (k, _) => k.startsWith(prefix + "key_")}
+        println("KEYS: " + kss.map(_._1))
+
+        val keys = rawData.toList.
+          filter { case (k, _) => k.startsWith(prefix + "key_")}.
+          map { case (k, _) => k.substring((prefix + "key_").length)}
+
+        println("KEYS 2" + keys)
+
+        keys.map(key =>
+          (key, rawData(prefix + "val_" + key).headOption.get)
+        ).toMap
+      }
+
       SpecField(
         target = fieldName,
         source = extract("source"),
         direct = extract("direct").equalsIgnoreCase("on"),
-        // FIXME implement
-
-        // mapping: Map[String, String] = Map[String, String](),
+        mapping = extractMapping,
         individual = extract("origin").equalsIgnoreCase("Individual"),
         yearly = extract("frequency").equalsIgnoreCase("yearly"),
         atr = extract("src").equalsIgnoreCase("atr"),

@@ -17,7 +17,11 @@ $(document).ready(function() {
         var key = $("input[id='key_" + field + "']").val();
         var val = $("input[id='val_" + field + "']").val();
         if (key && val) {
-            var row = '<tr><<td>&ldquo;' + key + '&rdquo;</td><td>&ldquo;' + val + '&rdquo;</td></tr>';
+            var row = '<tr>' +
+                '<td><input type="text" name="mapping_' + field + '_key_' + key + '" value="' + key + '"></td>' +
+                '<td><input type="text" name="mapping_' + field + '_val_' + key + '" value="' + val + '"></td>' +
+            '</tr>';
+
             $("#mapping_" + field + " > table tr:last").after(row);
             $("input[id='key_" + field + "']").val("");
             $("input[id='val_" + field + "']").val("");

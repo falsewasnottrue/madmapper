@@ -1,6 +1,5 @@
 package services
 
-
 import java.io.{BufferedWriter, File, FileWriter}
 
 import domain.Spec
@@ -22,9 +21,6 @@ class SpecService {
 
   def save(name: String, spec: Spec): Unit = {
     val rawData = Json.toJson(spec).toString()
-    println(rawData)
-    println(rawData.length)
-
     val file = new File(filename(name))
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write(rawData)

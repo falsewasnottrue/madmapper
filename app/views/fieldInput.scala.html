@@ -21,8 +21,8 @@
                     <tbody>
                         @for(m <- fieldSpec.mapping) {
                             <tr>
-                                <td>&ldquo;@m._1&rdquo;</td>
-                                <td>&ldquo;@m._2&rdquo;</td>
+                                <td><input type="text" name="mapping_@{field.name}_key_@{m._1}" value="@m._1"></td>
+                                <td><input type="text" name="mapping_@{field.name}_val_@{m._1}" value="@m._2"></td>
                             </tr>
                         }
                     </tbody>
