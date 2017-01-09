@@ -1,8 +1,9 @@
 package services
 
-import java.io.File
+import java.io.{File, FileWriter}
 
 import domain.Spec
+import play.api.libs.json.Json
 
 class SpecService {
 
@@ -12,6 +13,10 @@ class SpecService {
 
   def load(name: String): Spec = ???
 
-  def save(spec: Spec): Unit = ???
+  def save(name: String, spec: Spec): Unit = {
+    val rawData = Json.toJson(spec).toString()
+    new FileWriter(filename(name), false).write(rawData)
+  }
 
+  private def filename(name: String) = s"$location/$name"
 }

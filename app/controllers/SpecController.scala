@@ -29,11 +29,23 @@ class SpecController @Inject() extends Controller {
       ))
     ))
 
-    Ok(views.html.schema(schema, spec))
+    Ok(views.html.spec(specName, schema, spec))
   }
 
-  def generate = Action { implicit request =>
+
+  def save(specName: String) = Action { implicit request =>
+    val spec = Spec.fromRequest(request)
+    specService.save(specName, spec)
+
+    Ok(views.html.specs(specService.list))
+  }
+
+  def generate(specName: String) = Action { implicit request =>
     val spec = Spec.fromRequest(request)
     Ok(views.txt.dep_schema_mapping(spec))
+  }
+
+  def validate(specName: String) = Action {
+    NotImplemented
   }
 }

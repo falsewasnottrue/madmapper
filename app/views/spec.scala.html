@@ -1,9 +1,9 @@
-@(schema: domain.Schema, spec: domain.Spec)
+@(name: String, schema: domain.Schema, spec: domain.Spec)
 
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>MadMapper</title>
+        <title>@name</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/custom.css")">
@@ -13,11 +13,12 @@
     </head>
     <body>
         <div class="container">
-        <form action="@routes.SpecController.generate" method="post" class="form-horizontal">
+        <h2>@name</h2>
+        <form action="@routes.SpecController.save(name)" method="post" class="form-horizontal">
             @for(field <- schema.fields) {
                 @fieldInput(field, spec)
             }
-            <input class="btn btn-primary" type="submit" value="Generate mapping">
+            <input class="btn btn-primary" type="submit" value="Save">
         </form>
         </div>
     </body>

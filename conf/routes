@@ -3,12 +3,13 @@
 # ~~~~
 
 GET     /specs                      controllers.SpecController.list
-GET     /spec/:id                   controllers.SpecController.load(id: String)
 # TODO Get /spec -> NEW spec
-# TODO POST spec
 
-# TODO validate
-POST    /generate                   controllers.SpecController.generate
+GET     /spec/:id                   controllers.SpecController.load(id: String)
+POST    /spec/:id                   controllers.SpecController.save(id: String)
+
+POST    /generate/:id               controllers.SpecController.generate(id: String)
+POST    /validate/:id               controllers.SpecController.validate(id: String)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

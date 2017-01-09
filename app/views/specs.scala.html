@@ -12,13 +12,21 @@
     <body>
         <div class="container">
             <h2>Specifications</h2>
-            <ul>
+            <table class="table">
                 @for(spec <- specs) {
-                    <li>
-                        <a href="/spec/@spec">@spec</a>
-                    </li>
+                    <tr>
+                        <td>
+                            <a href="@routes.SpecController.load(spec)">@spec</a>
+                        </td>
+                        <td>
+                            <a href="@routes.SpecController.generate(spec)">generate</a>
+                        </td>
+                        <td>
+                            <a href="@routes.SpecController.validate(spec)">validate</a>
+                        </td>
+                    </tr>
                 }
-            </ul>
+            </table>
         </div>
     </body>
 </html>

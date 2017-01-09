@@ -1,5 +1,6 @@
 package domain
 
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.{AnyContent, Request}
 
 case class SpecField(
@@ -17,11 +18,13 @@ case class SpecField(
   val variable: Boolean = !yearly
 }
 
+object SpecField {
+  implicit val specFieldFormat: Format[SpecField] = Json.format[SpecField]
+}
+
 case class Spec(specFields: Seq[SpecField]) {
 
   def validate(schema: Schema): Boolean = ???
-  def save = ???
-  def load = ???
 
   def forField(field: Field): SpecField =
     specFields.
@@ -34,6 +37,8 @@ case class Spec(specFields: Seq[SpecField]) {
 }
 
 object Spec {
+  implicit val specFormat: Format[Spec] = Json.format[Spec]
+
   val emptySpec = Spec(Nil)
 
   def fromRequest(request: Request[AnyContent]): Spec = {
@@ -51,6 +56,7 @@ object Spec {
         target = fieldName,
         source = extract("source"),
         direct = extract("direct").equalsIgnoreCase("on"),
+        // FIXME implment
         // mapping: Map[String, String] = Map[String, String](),
         individual = extract("origin").equalsIgnoreCase("Individual"),
         yearly = extract("frequency").equalsIgnoreCase("yearly"),
