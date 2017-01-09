@@ -2,17 +2,18 @@ package controllers
 
 import javax.inject._
 
-import domain.{Spec}
+import domain.Spec
 import play.api.mvc._
-import services.{SchemaService, SpecService}
+import services.{SchemaService, SpecService, ValidationService}
 
 @Singleton
 class SpecController @Inject() extends Controller {
 
   private val schemaService = new SchemaService
-  private val schema = schemaService.loadSchema
-
   private val specService = new SpecService
+  private val validationService = new ValidationService
+
+  private val schema = schemaService.loadSchema
 
   def list = Action { implicit request =>
     Ok(views.html.specs(specService.list)).flashing()
@@ -41,6 +42,9 @@ class SpecController @Inject() extends Controller {
   }
 
   def validate(specName: String) = Action {
-    NotImplemented
+    val spec = specService.load(specName)
+    val validationResult = validationService.validate(schema, spec)
+
+    Ok(views.html.spec(specName, schema, spec, Some(validationResult)))
   }
 }

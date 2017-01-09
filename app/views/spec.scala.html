@@ -1,4 +1,5 @@
-@(name: String, schema: domain.Schema, spec: domain.Spec)
+
+@(name: String, schema: domain.Schema, spec: domain.Spec, validationResult: Option[domain.ValidationResult] = None)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -14,9 +15,17 @@
     <body>
         <div class="container">
         <h2>@name</h2>
+        @validationResult.map { result =>
+            @if(result.valid) {
+                <div class="success">Specification is valid</div>
+            } else {
+                <div class="error">Specification contains errors</div>
+            }
+        }
+
         <form action="@routes.SpecController.save(name)" method="post" class="form-horizontal">
             @for(field <- schema.fields) {
-                @fieldInput(field, spec)
+                @fieldInput(field, spec, validationResult)
             }
             <input class="btn btn-primary" type="submit" value="Save">
             <a class="btn btn-default" href="@routes.SpecController.list">Cancel</a>
