@@ -1,6 +1,6 @@
 $(document).ready(function() {
     // folding of editors
-    $("label[id^='lbl']").click(function() {
+    $(".lbl").click(function() {
         var field = $(this).attr('for')
         $("div[id='edit_" + field + "']").toggleClass('collapsed');
     });

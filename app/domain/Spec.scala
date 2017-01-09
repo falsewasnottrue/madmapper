@@ -25,7 +25,9 @@ object SpecField {
 
 case class Spec(specFields: Seq[SpecField]) {
 
-  def forField(field: Field): SpecField =
+  def forField(field: Field): Option[SpecField] = specFields.find(_.target == field.name)
+
+  def forFieldM(field: Field): SpecField =
     specFields.
       find(_.target == field.name).
       getOrElse(SpecField(field.name))

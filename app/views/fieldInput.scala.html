@@ -1,15 +1,15 @@
 @(field: domain.Field, spec: domain.Spec, validationResult: Option[domain.ValidationResult] = None)
 
 <div class="form-group">
-    @defining(spec.forField(field)) { fieldSpec =>
+    @defining(spec.forFieldM(field)) { fieldSpec =>
         @defining(validationResult.flatMap(_.forField(field.name))) { error =>
             @if(error.isDefined) {
-                <label class="col-sm-3 control-label error" for="@field.name">
+                <label class="col-sm-3 control-label error lbl" for="@field.name">
                     @field.name<br/>
                     <em>@error</em>
                 </label>
             } else {
-                <label class="col-sm-3 control-label" for="@field.name">@field.name</label>
+                <label class="col-sm-3 control-label lbl" for="@field.name">@field.name</label>
             }
         }
 

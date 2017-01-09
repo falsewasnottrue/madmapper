@@ -6,7 +6,9 @@ trait FieldType
 case object StringFieldType extends FieldType
 case object IntFieldType extends FieldType
 
-case class Field(name: String, typ: String)
+case class Field(name: String, typ: String) {
+  def required: Boolean = !typ.contains("null")
+}
 
 case class Schema(raw: JsValue) {
 
