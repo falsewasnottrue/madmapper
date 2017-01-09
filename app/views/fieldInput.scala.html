@@ -29,9 +29,14 @@
                     <thead><tr><td>from</td><td>to</td></tr></thead>
                     <tbody>
                         @for(m <- fieldSpec.mapping) {
-                            <tr>
-                                <td><input type="text" name="mapping_@{field.name}_key_@{m._1}" value="@m._1"></td>
-                                <td><input type="text" name="mapping_@{field.name}_val_@{m._1}" value="@m._2"></td>
+                            <tr id="mapping_@{field.name}_@{m._1.replaceAll(" ", "_")}">
+                                <td><input type="text" name="mapping_@{field.name}_key_@{m._1.replaceAll(" ", "_")}" value="@m._1"></td>
+                                <td><input type="text" name="mapping_@{field.name}_val_@{m._1.replaceAll(" ", "_")}" value="@m._2"></td>
+                                <td>
+                                    <a href="#" class="btn btn-warning removemap"
+                                       data-fieldname="mapping_@{field.name}_@{m._1.replaceAll(" ", "_")}"
+                                       onclick="removeMap(event);">Remove</a>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -39,25 +44,25 @@
                 <div>
                     <input id="key_@field.name" type="text" class="col-sm-3" placeholder="Key">
                     <input id="val_@field.name" type="text" class="col-sm-3" placeholder="Value">
-                    <button id="addmap" data-fieldname="@field.name" type="button" class="btn btn-sm btn-default">Add</button>
+                    <button data-fieldname="@field.name" type="button" class="btn btn-sm btn-default addmap">Add</button>
                 </div>
             </div>
 
             <div class="col-sm-4">
                 <fieldset>
                     <input type="radio" id="p_@field.name" name="origin_@field.name" value="Individual" @if(fieldSpec.individual) {checked}>
-                    <label for="p_@field.name"> Individual</label><br>
+                    <label for="p_@field.name">Individual</label><br>
                     <input type="radio" id="hh_@field.name" name="origin_@field.name" value="Household" @if(fieldSpec.household) {checked}>
-                    <label for="hh_@field.name"> Household</label><br>
+                    <label for="hh_@field.name">Household</label><br>
                 </fieldset>
             </div>
 
             <div class="col-sm-3">
                 <fieldset>
                     <input type="radio" id="yearly_@field.name" name="frequency_@field.name" value="Yearly" @if(fieldSpec.yearly) {checked}>
-                    <label for="yearly_@field.name"> Yearly</label><br>
+                    <label for="yearly_@field.name">Yearly</label><br>
                     <input type="radio" id="variable_@field.name" name="frequency_@field.name" value="Variable" @if(fieldSpec.variable) {checked}>
-                    <label for="variable_@field.name"> Variable</label><br>
+                    <label for="variable_@field.name">Variable</label><br>
                 </fieldset>
             </div>
 

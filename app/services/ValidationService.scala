@@ -5,7 +5,7 @@ import domain._
 class ValidationService {
 
   def validate(schema: Schema, spec: Spec): ValidationResult = {
-    findRequiredMissing(schema, spec) + findAmbiguousMappings(schema, spec)
+    findRequiredMissing(schema, spec)
   }
 
   private def findRequiredMissing(schema: Schema, spec: Spec): ValidationResult = {
@@ -19,6 +19,4 @@ class ValidationService {
     ValidationResult(errors)
   }
 
-  private def findAmbiguousMappings(schema: Schema, spec: Spec): ValidationResult =
-    ValidationResult(Map[String, String]())
 }
