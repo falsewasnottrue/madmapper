@@ -55,13 +55,10 @@ object Spec {
         val prefix = "mapping_" + fieldName + "_"
         val kss = rawData.toList.
           filter { case (k, _) => k.startsWith(prefix + "key_")}
-        println("KEYS: " + kss.map(_._1))
 
         val keys = rawData.toList.
           filter { case (k, _) => k.startsWith(prefix + "key_")}.
           map { case (k, _) => k.substring((prefix + "key_").length)}
-
-        println("KEYS 2" + keys)
 
         keys.map(key =>
           (key, rawData(prefix + "val_" + key).headOption.get)

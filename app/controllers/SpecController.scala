@@ -25,16 +25,6 @@ class SpecController @Inject() extends Controller {
 
   def load(specName: String) = Action { implicit request =>
     val spec = specService.load(specName)
-//    // TODO load spec, mock data for now
-//    val spec = Spec(Seq(
-//      SpecField("gxl_agegroup_1", "Alter_Usage_IPAN_2008",
-//        direct = false,
-//        mapping = Map(
-//        " 0 bis 2 Jahre" -> "01",
-//        " 3 bis 5 Jahre" -> "02"
-//      ))
-//    ))
-
     Ok(views.html.spec(specName, schema, spec))
   }
 
