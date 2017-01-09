@@ -2,20 +2,24 @@ package controllers
 
 import javax.inject._
 
-import domain.{Schema, Spec, SpecField}
-import play.api._
-import play.api.libs.json.Json
+import domain.{Spec, SpecField}
 import play.api.mvc._
-import services.SchemaService
+import services.{SchemaService, SpecService}
 
 @Singleton
-class SchemaController @Inject() extends Controller {
+class SpecController @Inject() extends Controller {
 
-  val schemaService = new SchemaService
-  val schema: Schema = schemaService.loadSchema
+  private val schemaService = new SchemaService
+  private val schema = schemaService.loadSchema
 
-  def index = Action {
-    // TODO some mock spec
+  private val specService = new SpecService
+
+  def list = Action {
+    Ok(views.html.specs(specService.list))
+  }
+
+  def load(specName: String) = Action {
+    // TODO load spec, mock data for now
     val spec = Spec(Seq(
       SpecField("gxl_agegroup_1", "Alter_Usage_IPAN_2008",
         direct = false,

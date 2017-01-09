@@ -1,0 +1,24 @@
+@(specs: Seq[String])
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>MadMapper</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/custom.css")">
+
+    </head>
+    <body>
+        <div class="container">
+            <h2>Specifications</h2>
+            <ul>
+                @for(spec <- specs) {
+                    <li>
+                        <a href="/spec/@spec">@spec</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </body>
+</html>

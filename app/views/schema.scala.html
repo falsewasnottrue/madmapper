@@ -13,7 +13,7 @@
     </head>
     <body>
         <div class="container">
-        <form action="@routes.SchemaController.generate" method="post" class="form-horizontal">
+        <form action="@routes.SpecController.generate" method="post" class="form-horizontal">
             @for(field <- schema.fields) {
                 @fieldInput(field, spec)
             }

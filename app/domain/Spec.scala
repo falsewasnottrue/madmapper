@@ -45,7 +45,7 @@ object Spec {
       map(_.substring("origin_".length)).toSeq
 
     val specFields = fieldNames.map(fieldName => {
-      def extract(prefix: String): String = rawData.get(prefix + "_" + + fieldName).flatMap(_.headOption).getOrElse("")
+      def extract(prefix: String): String = rawData.get(prefix + "_" + fieldName).flatMap(_.headOption).getOrElse("")
 
       SpecField(
         target = fieldName,
