@@ -28,7 +28,6 @@ class SpecController @Inject() extends Controller {
     Ok(views.html.spec(specName, schema, spec))
   }
 
-
   def save(specName: String) = Action { implicit request =>
     val spec = Spec.fromRequest(request)
     specService.save(specName, spec)
@@ -37,7 +36,7 @@ class SpecController @Inject() extends Controller {
   }
 
   def generate(specName: String) = Action { implicit request =>
-    val spec = Spec.fromRequest(request)
+    val spec = specService.load(specName)
     Ok(views.txt.dep_schema_mapping(spec))
   }
 

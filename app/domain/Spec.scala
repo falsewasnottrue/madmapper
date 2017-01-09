@@ -14,6 +14,7 @@ case class SpecField(
 
   val origin: String = if (individual) "P" else "HH"
 
+  val isMapped: Boolean = !direct && mapping.keySet.size > 0
   val household: Boolean = !individual
   val variable: Boolean = !yearly
 }
@@ -24,8 +25,6 @@ object SpecField {
 
 case class Spec(specFields: Seq[SpecField]) {
 
-  def validate(schema: Schema): Boolean = ???
-
   def forField(field: Field): SpecField =
     specFields.
       find(_.target == field.name).
@@ -34,6 +33,14 @@ case class Spec(specFields: Seq[SpecField]) {
   def featureSelect: String = specFields.map(specField =>
       s"featurename == '${specField.source}' AND origin == '${specField.origin}'"
     ).mkString(" OR ")
+
+  // FIXME implement
+  def renamedFields: Map[String, String] = ???
+
+  def mappedFields: Map[String, Map[String, String]] = {
+    specFields.filter(_.isMapped).map(field => (field.source, field.mapping)).toMap
+  }
+
 }
 
 object Spec {

@@ -135,109 +135,13 @@ panelist_records = FOREACH panelist_records GENERATE FLATTEN(CleanValues(*)),
 --#########################################################################################################################
 
 panelist_records_metrics = FOREACH panelist_records GENERATE *, -2 AS gxl_fixedline_intensity,
-	CASE alter_usage_ipan_2008
-		WHEN '_0_bis_2_jahre' THEN 1
-		WHEN '_3_bis_5_jahre' THEN 4
-		WHEN '_6_bis_9_jahre' THEN 7.5
-		WHEN '10_bis_13_jahre' THEN 11
-		WHEN '14_bis_15_jahre' THEN 14.5
-		WHEN '16_bis_17_jahre' THEN 16.5
-		WHEN '18_bis_19_jahre' THEN 18.5
-		WHEN '20_bis_24_jahre' THEN 22
-		WHEN '25_bis_29_jahre' THEN 27
-		WHEN '30_bis_34_jahre' THEN 32
-		WHEN '35_bis_39_jahre' THEN 37
-		WHEN '40_bis_44_jahre' THEN 42
-		WHEN '45_bis_49_jahre' THEN 47
-		WHEN '50_bis_54_jahre' THEN 52
-		WHEN '55_bis_59_jahre' THEN 57
-		WHEN '60_bis_64_jahre' THEN 62
-		WHEN '65_bis_69_jahre' THEN 67
-		WHEN '70_bis_74_jahre' THEN 72
-		WHEN '75_und_mehr_jahre' THEN 77
-		ELSE NULL
-	END AS mst_age_metric,
 
-	CASE
-		WHEN haushaltsgroesse == '1_personenhaushalt_weiblich' OR
-			haushaltsgroesse matches '1_personenhaushalt_mnnlich' THEN 1
-		WHEN haushaltsgroesse == '2_personenhaushalt' THEN 2
-		WHEN haushaltsgroesse == '3_personenhaushalt' THEN 3
-		WHEN haushaltsgroesse == '4_personenhaushalt' THEN 4
-		WHEN haushaltsgroesse == '5_personenhaushalt' THEN 5
-		WHEN haushaltsgroesse == '6_personenhaushalt' THEN 6
-		WHEN haushaltsgroesse == '7_personenhaushalt' THEN 7
-		WHEN haushaltsgroesse == '8_personenhaushalt' THEN 8
-		WHEN haushaltsgroesse == '9_personenhaushalt' THEN 9
-		WHEN haushaltsgroesse == '10_personenhaushalt' THEN 10
-		ELSE NULL
-	END AS mst_sizeofhh_metric,
-
-	CASE nettoeinkommen_pro_kopf_1_2002
-		WHEN 'bis_499_euro' THEN 250
-		WHEN '_500_euro_624_euro' THEN 565
-		WHEN '_625_euro_749_euro' THEN 690
-		WHEN '_750_euro_874_euro' THEN 815
-		WHEN '_875_euro_999_euro' THEN 940
-		WHEN '1000_euro_1124_euro' THEN 1065
-		WHEN '1125_euro_1249_euro' THEN 1190
-		WHEN '1250_euro_1374_euro' THEN 1315
-		WHEN '1375_euro_1499_euro' THEN 1440
-		WHEN '1500_euro_1749_euro' THEN 1625
-		WHEN '1750_euro_1999_euro' THEN 1875
-		WHEN '2000_euro_und_mehr' THEN 2300
-		ELSE NULL
-	END AS mst_income_ind_net_1_metric,
-
-	CASE hhnettoeink_monatl_ab_2002
-		WHEN 'bis_499_euro' THEN 250
-		WHEN '_500_euro_749_euro' THEN 625
-		WHEN '_750_euro_999_euro' THEN 875
-		WHEN '1000_euro_1249_euro' THEN 1125
-		WHEN '1250_euro_1499_euro' THEN 1375
-		WHEN '1500_euro_1749_euro' THEN 1625
-		WHEN '1750_euro_1999_euro' THEN 1875
-		WHEN '2000_euro_2249_euro' THEN 2125
-		WHEN '2250_euro_2499_euro' THEN 2375
-		WHEN '2500_euro_2749_euro' THEN 2625
-		WHEN '2750_euro_2999_euro' THEN 2875
-		WHEN '3000_euro_3249_euro' THEN 3125
-		WHEN '3250_euro_3499_euro' THEN 3375
-		WHEN '3500_euro_3749_euro' THEN 3625
-		WHEN '3750_euro_3999_euro' THEN 3875
-		WHEN '4000_euro_und_mehr' THEN 4400
-		ELSE NULL
-	END AS mst_income_hh_net_metric,
-
-	CASE internetnutzung_person
-		WHEN 'nie' THEN 0
-		WHEN 'seltner' THEN 0.5
-		WHEN '1_2_t_woche' THEN 1.5
-		WHEN '3_4_t_woche' THEN 3.5
-		WHEN '5_6_t_woche' THEN 5.5
-		WHEN 'taeglich' THEN 7
-		ELSE NULL
-	END AS de_usage_frequency_metric,
-
-	CASE anzahl_der_kinder_unter_14_j
-		WHEN 'ohne_kinder' THEN 0
-		WHEN '1_kind' THEN 1
-		WHEN '2_kinder' THEN 2
-		WHEN '3_kinder' THEN 3
-		WHEN '4_kinder' THEN 4
-		WHEN '5_kinder' THEN 5
-		WHEN '6_kinder' THEN 6
-		WHEN '7_kinder' THEN 7
-		ELSE NULL
-	END AS mst_childreninhh_u14_metric,
-
-	(int)geburtsjahr_vtab_person AS gxl_birthyear,
-
-	CASE geschlecht_ipan
-	  WHEN 'weiblich' THEN 2
-      WHEN 'maennlich' THEN 1
-      ELSE NULL
-	END AS gxl_gender,
+    @for((fieldName,fieldMapping) <- spec.mappedFields) {
+        CASE @fieldName
+            @for((key,value) <- fieldMapping) { WHEN '@key' THEN value
+            }
+        END AS mst_age_metric,
+    }
 
 	'$slice_end' AS dep_valid_from,
 	'$slice_end' AS dep_valid_until;
