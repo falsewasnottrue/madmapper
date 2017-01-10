@@ -11,11 +11,12 @@
     </head>
     <body>
         <div class="container">
+            <h2>Specifications</h2>
+
             @flash.get("message").map { msg =>
                 <div class="info">@msg</div>
             }
 
-            <h2>Specifications</h2>
             <table class="table">
                 @for(spec <- specs) {
                     <tr>

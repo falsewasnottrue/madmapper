@@ -16,7 +16,7 @@ class SpecController @Inject() extends Controller {
   private val schema = schemaService.loadSchema
 
   def list = Action { implicit request =>
-    Ok(views.html.specs(specService.list)).flashing()
+    Ok(views.html.specs(specService.list))
   }
 
   def newSpec = Action { implicit request =>
@@ -33,7 +33,7 @@ class SpecController @Inject() extends Controller {
     val spec = Spec.fromRequest(request)
     specService.save(specName, spec)
 
-    Ok(views.html.specs(specService.list)).flashing("message" -> s"$specName erfolgreich gesichert")
+    Redirect(routes.SpecController.list()).flashing("message" -> s"$specName erfolgreich gesichert")
   }
 
   def generate(specName: String) = Action { implicit request =>
