@@ -9,7 +9,7 @@ import scala.io.Source
 
 class SpecService {
 
-  private val location = "/Users/rasmus/Documents/development/madmapperfiles"
+  private val location = "C:/Users/rasmus.kuschel/projects/gfk/mmfiles"
 
   def list: Seq[String] = new File(location).listFiles.toSeq.map(_.getName)
 
